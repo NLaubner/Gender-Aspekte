@@ -1,0 +1,4 @@
+numpy~=2.4.4
+python~=3.12.13
+pandas~=3.0.2
+wikipedia-api~=0.14.1
