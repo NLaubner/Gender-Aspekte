@@ -4,20 +4,135 @@ zur Visualisierung der Ergebnisse.
 """
 import numpy as np
 import pandas as pd
+import math
+from collections import Counter, defaultdict
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
-import wikipediaapi
+from scipy.stats import spearmanr
+import re
+import spacy
+nlp = spacy.load("de_core_news_sm")
 
+# Preprocessing
+def preprocessing(data, corpus, STOPWORDS):
+    for _, row in data.iterrows():
+        gender = row["genderLabel"].strip().lower()
+    if gender in corpus:
+        text = row["text"]
+        # Überschriften entfernen
+        text = re.sub(r"={1,6}[^=]+={1,6}", "", text)
 
+        doc = nlp(text[:100_000])
+        tokens = []
+        for token in doc:
+            if token.pos_ not in {"VERB"}:  # nur verben ansehen
+                continue
+            w = token.lemma_.lower()
+            if w not in STOPWORDS and len(w) > 2 and w.isalpha():
+                tokens.append(w)
 
+        corpus[gender].extend(tokens)
 
+# Rangkorrelation
+def rang_corr(corpus):
+    counts_m = Counter(corpus["männlich"])
+    total_m = sum(counts_m.values())
+    freq_m = {w: c / total_m for w, c in counts_m.items()}
 
+    counts_f = Counter(corpus["weiblich"])
+    total_f = sum(counts_f.values())
+    freq_f = {w: c / total_f for w, c in counts_f.items()}
+
+    # Rang-Korrelation
+    common = set(freq_m) & set(freq_f)
+    words = list(common)
+    fm = [freq_m[w] for w in words]
+    ff = [freq_f[w] for w in words]
+    rho, pval = spearmanr(fm, ff)
+
+    print(f"Rang-Korrelation (gemeinsames Vokabular, n={len(common):,}):")
+    print(f"  ρ = {rho:.3f}  p = {pval:.2e}")
+    return freq_m, freq_f
+
+# PMI
+def pmi(corpus):
+    all_tokens = corpus["männlich"] + corpus["weiblich"]
+    total = len(all_tokens)
+    n_male = len(corpus["männlich"])
+    n_female = len(corpus["weiblich"])
+
+    p_gender = {"männlich": n_male / total, "weiblich": n_female / total}
+
+    all_counts = Counter(all_tokens)
+    gender_counts = {g: Counter(corpus[g]) for g in ("männlich", "weiblich")}
+
+    pmi = defaultdict(dict)
+    for word, global_count in all_counts.items():
+        if global_count < 60:
+            continue
+        p_word = global_count / total
+        for gender in ("männlich", "weiblich"):
+            gc = gender_counts[gender].get(word, 0)
+            p_word_gender = gc / total
+            if p_word_gender == 0:
+                pmi[gender][word] = -np.inf
+            else:
+                pmi[gender][word] = math.log2(p_word_gender / (p_word * p_gender[gender]))
+
+    top_n = 30
+    top_male   = sorted(pmi["männlich"], key=lambda w: pmi["männlich"][w], reverse=True)[:top_n]
+    top_female = sorted(pmi["weiblich"], key=lambda w: pmi["weiblich"][w], reverse=True)[:top_n]
+
+    pmi_männlich = {w: pmi["männlich"][w] for w in top_male}
+    pmi_weiblich = {w: pmi["weiblich"][w] for w in top_female}
+
+    print("Top 10 männlich assoziierte Wörter (PMI):")
+    for w, s in list(pmi_männlich.items())[:10]:
+        print(f"  {w:<25} {s:+.3f}")
+
+    print("\nTop 10 weiblich assoziierte Wörter (PMI):")
+    for w, s in list(pmi_weiblich.items())[:10]:
+        print(f"  {w:<25} {s:+.3f}")
+    return pmi_männlich, pmi_weiblich
+
+# Lexikon-Analyse und Plot
+
+#| echo: false
+
+def lexikon_analyse(corpora: dict, lexika: dict):
+    ergebnisse = {}
+    for kategorie, woerter in LEXIKA.items():
+        ergebnisse[kategorie] = {}
+        for gender, tokens in corpora.items():
+            total = len(tokens)
+            treffer = sum(1 for t in tokens if t in woerter)
+            ergebnisse[kategorie][gender] = treffer / total * 1000  # pro 1000 Wörter
+    return ergebnisse
+
+def plot_lexikon(ergebnisse: dict):
+    kategorien = list(ergebnisse.keys())
+    x = np.arange(len(kategorien))
+    breite = 0.35
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.bar(x - breite/2, [ergebnisse[k]["männlich"] for k in kategorien],
+           breite, label="Männlich", color=COLORS["male"])
+    ax.bar(x + breite/2, [ergebnisse[k]["weiblich"] for k in kategorien],
+           breite, label="Weiblich", color=COLORS["female"])
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(kategorien)
+    ax.set_ylabel("Häufigkeit pro 1000 Wörter")
+    ax.set_title("Lexikon-Analyse nach Geschlecht")
+    ax.legend()
+    plt.tight_layout()
+    plt.show()
 
 # Visualisierungen
 # Balkendiagramm der Geschlechterverteilung
 
-def plot_gender(df):
-    counts = df.groupby("genderLabel").size()
+def plot_gender(data):
+    counts = data.groupby("genderLabel").size()
 
     fig, ax = plt.subplots(figsize=(8, 5))
 
