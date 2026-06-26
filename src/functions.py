@@ -97,8 +97,6 @@ def pmi(corpus):
 
 # Lexikon-Analyse und Plot
 
-#| echo: false
-
 def lexikon_analyse(corpora: dict, lexika: dict):
     ergebnisse = {}
     for kategorie, woerter in LEXIKA.items():

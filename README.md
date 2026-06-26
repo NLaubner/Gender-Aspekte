@@ -3,7 +3,7 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
 
-**Authors:** Nico Laubner, Semanur Asalioglu, Alison Moldovan-Mauer
+**Authors:** Nico Laubner, Alison Moldovan-Mauer
 
 ```
 ├── data
