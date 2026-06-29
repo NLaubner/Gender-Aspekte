@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Gender Bias in Wikipedia-Biografien in der Wissenschaft</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="wikipedia_scientists_files/libs/clipboard/clipboard.min.js"></script>
+<script src="wikipedia_scientists_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="wikipedia_scientists_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="wikipedia_scientists_files/libs/quarto-html/popper.min.js"></script>
+<script src="wikipedia_scientists_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="wikipedia_scientists_files/libs/quarto-html/anchor.min.js"></script>
+<link href="wikipedia_scientists_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="wikipedia_scientists_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="wikipedia_scientists_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="wikipedia_scientists_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="wikipedia_scientists_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Gender Bias in Wikipedia-Biografien in der Wissenschaft</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Authors</div>
+    <div class="quarto-title-meta-contents">
+             <p>Nico Lauber </p>
+             <p>Alison Moldovan-Mauer </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="gender-bias-in-wikipedia-biografien-in-der-wissenschaft" class="level1">
+<h1>Gender Bias in Wikipedia-Biografien in der Wissenschaft</h1>
+<div id="a6f28d22c7ffc0ab" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;jupyter&quot;,&quot;value&quot;:{&quot;is_executing&quot;:true}}">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> wikipediaapi</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.corpus <span class="im">import</span> stopwords</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="ab5c6c26ee89ba5a" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>sys.path.append(<span class="st">'../src'</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> src.functions <span class="im">import</span> plot_gender, preprocessing, rang_corr, pmi, lexikon_analyse, plot_lexikon,</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="einleitung-und-motivation" class="level1">
+<h1>1 Einleitung und Motivation</h1>
+<p>Wikipedia ist das größte frei zugängliche Wissensarchiv und wird stets als neutrale Quelle bezeichnet. Gleichzeitig ist sie eine wichtige Grundlage, um beispielsweise Sprachmodelle zu trainieren <span class="citation" data-cites="wikipedia_2026">(<a href="#ref-wikipedia_2026" role="doc-biblioref"><span>“Wikipedia”</span> 2026</a>)</span> (ODER WAHRNEHMUNG ALS NEUTRALE QUELLE). Bias und Verzerrungen in den Artikeln können sich so auf nachgelagerte Systeme übertragen. Genau hier setzt unsere Arbeit an: Wir untersuchen, ob ein Gender Bias den Wikipedia-Biograhien von deutschen Wissenschaftlerinnen und Wissenschaftlern zu finden ist. Wir haben uns dabei auf eine sprachliche Auswertung fokussiert.</p>
+<p>Ein sogenannter Gender Bias kann auf mehreren Ebenen entstehen. Strukturell sind Frauen in der Wissenschaft historisch unterrepräsentiert, was auch in Biografien auffält [<span class="citation" data-cites="konieczny_gender_2018">Konieczny and Klein (<a href="#ref-konieczny_gender_2018" role="doc-biblioref">2018</a>)</span>]<span class="citation" data-cites="wagner_its_2015">(<a href="#ref-wagner_its_2015" role="doc-biblioref">Wagner et al. 2015</a>)</span>. Für uns ist jedoch relevanter, wie über eine Person geschrieben wird, selbst wenn ein Artikel existiert. Graells-Garrido et al. <span class="citation" data-cites="graells-garrido_first_2015">(<a href="#ref-graells-garrido_first_2015" role="doc-biblioref">Graells-Garrido et al. 2015</a>)</span> zeigen, dass Frauenbiografien häufiger eheliche und sexialitätsbezogene Inhalte enthalten, während männliche Biografien stärker mit kongitiven Prozessen assoziiert werden. Sun und Peng <span class="citation" data-cites="sun_men_2021">(<a href="#ref-sun_men_2021" role="doc-biblioref">Sun and Peng 2021</a>)</span> weisen nach, dass private Ereignisse wie eine Heirat bei Frauen sogar im Karriere-Abschnitt auftauchen, bei Männern hingegen im Abschnitt zum Privatleben. Wagner et al. <span class="citation" data-cites="wagner_its_2015">(<a href="#ref-wagner_its_2015" role="doc-biblioref">Wagner et al. 2015</a>)</span> bestätigen über sechs Sprachversionen hinweg, dass Begriffe aus den Bereichen Familie und Beziehung deutlich häufiger Frauenbiografien zugeordnet werden, und Brun et al. <span class="citation" data-cites="brun_wikigender_2022">(<a href="#ref-brun_wikigender_2022" role="doc-biblioref">Brun et al. 2022</a>)</span> finden, dass Frauen eher mit Familie, Männer eher mit Beruf und Sport assoziiert werden.</p>
+<p>Theoretisch interessant wird das im Kontrast zu Hydes Gender-Similarities-Hyothese <span class="citation" data-cites="hyde_gender_2015">(<a href="#ref-hyde_gender_2015" role="doc-biblioref"><strong>hyde_gender_2015?</strong></a>)</span>, wonach sich Männer und Frauen in den meisten psychologischen Merkmalen kaum unterscheiden. Zeigen sich in den Biografien trotzdem deutliche Unterschiede, spricht das eher für eine sozial konstruierte Verzerrung in der Darstellung als für reale Unterschiede. Viele Datensätze sind implizit männlich geprägt, weil Männer lange als der “Normalfall” galten.</p>
+<section id="gender-bias" class="level2">
+<h2 class="anchored" data-anchor-id="gender-bias">1.1 Gender Bias</h2>
+<p>Gender Bias lässt sich in der Wikipedia-Forschung auf mehreren Ebenen unterscheiden. Wagner et al. <span class="citation" data-cites="wagner_its_2015">(<a href="#ref-wagner_its_2015" role="doc-biblioref">Wagner et al. 2015</a>)</span> schlagen vier Dimensionen vor: Coverage Bias (wie viele Frauen vs.&nbsp;Männer überhaupt einen Artikel bekommen), Structural Bias (wie Artikel im Hyperlink -Netzwerk verknüpft sind). Lexical Bias (welche Wörter zur Beschreibung verwendet werden) und Visibility Bias (welche Artikel z. B. auf der Startseite erwähnt werden). Graells-Garrido et al. <span class="citation" data-cites="graells-garrido_first_2015">(<a href="#ref-graells-garrido_first_2015" role="doc-biblioref">Graells-Garrido et al. 2015</a>)</span> fassen Bias ähnlich als systematische Asymmentrie zusammen, mit der die Dimensionen Metadaten, Sprache und Netzwerkstruktur ein Geschlecht gegenüber dem anderen begünstigen. Linguistischer Bias im engeren Sinn bezeichnet dabei eine Asymmetrie in der Wortwahl, die soziale Kategorisierungen widerspiegelt <span class="citation" data-cites="brun_wikigender_2022">(<a href="#ref-brun_wikigender_2022" role="doc-biblioref">Brun et al. 2022</a>)</span>. Unsere Arbeit fokussiert sich auf genau diese lexikalische bzw. inhaltliche Dimension: Wir untersuchen nicht, wie viele Biografien existieren, sondern mit welchen Wörtern und Themen Wissenschaftler:innen beschrieben werden.</p>
+</section>
+<section id="matrix-of-domitaion" class="level2">
+<h2 class="anchored" data-anchor-id="matrix-of-domitaion">1.2 MATRIX OF DOMITAION</h2>
+<p>Geschlecht ist nie isoliert, sondern immer im Zusammenspiel mit anderen sozialen Kategorien wie Herkunft, Klasse oder beruflichem Status. Genau das beschreibt die Soziologin Patricia Hill Collins mit dem Konzept der “Matrix of Domination” <span class="citation" data-cites="collins_black_1990">(<a href="#ref-collins_black_1990" role="doc-biblioref">Collins 1990</a>)</span>: Unterdrückungs- und Priviligierungsverhältnisse sind nicht additiv, sondern eher verschränkt. Wer in einer Hinsicht privilegiert ist, kann genauso in einer anderen benachteiligt sein. Diese Achsen lassen sich. nicht einfach zusammenfügen. Collins wendet sich damit explizit gegen Ansätze, die Kategorien wie race, class oder gender als getrennte, sich gegenseitig ausschließende Unterdrückungsformen behandeln. Treffend bringt sie das auf den Punkt, wenn sie schreibt, eine Matrix of Domination “contains few pure vicntims or opressors” <span class="citation" data-cites="collins_black_1999">(<a href="#ref-collins_black_1999" role="doc-biblioref"><strong>collins_black_1999?</strong></a>)</span>. Ein und dieselbe Person kann je nach Kontext gleichzeitig priviligiert und benachteiligt sein.</p>
+<p>Für die Data Science ist dieser Gedanke besonders wichtig, weil Datensätze und Analyseethoden selbst Teil solcher Machtstrukturen sind. D’Ignaio und Klein <span class="citation" data-cites="dignazio_data_2020">(<a href="#ref-dignazio_data_2020" role="doc-biblioref">D’Ignazio and Klein 2020</a>)</span> greifen Collins’ Konzept explizit auf und fordern, binäre Geschlechterkategorisierungen in Daten kritisch zu hinterfragen, da sie reale soziale Komplexität verdecken - wer nur nach “männlich” und “weiblich” sortiert, blendet zwangsläufig aus, wie sich diese Kategorie mit anderen überschneidet.</p>
+<p>Unsere Arbeit reduziert Geschlecht aus methodischen Gründen (Verfpgbarkeit der Wikipedia-Metadaten) auf eine binäre Kategorie und blendet damit andere mögliche Achsen wie Herkundt, Fachrichtung oder akademischen Status aus. Im Sinne der Matrix of Domination ist das eine bewusste Einschränkung: Die hier gefundenen Muster lassen sich nicht verallgemeinern, sondern beschreiben ausschließlich, wie sich die Kategorie Geschlecht in der sprachlichen Darstellung von Wissenschaftler:innen auf Wikipedia zeigt, wobei sie losgelöst von intersektionalen Verschränkungen ist.</p>
+</section>
+<section id="forschungsstand" class="level2">
+<h2 class="anchored" data-anchor-id="forschungsstand">1.3 Forschungsstand</h2>
+<p>Die bisherige Forschung liefert ein uneinheitliches Bild: Konienczny und Klein <span class="citation" data-cites="konienczny_gender_2ß18">(<a href="#ref-konienczny_gender_2ß18" role="doc-biblioref"><strong>konienczny_gender_2ß18?</strong></a>)</span> finden auf der Ebene der Abdeckung (Coverage) über alle Wikipedia-Sprachversionen hinweg einen globalen Frauenanteil von nur rund 15-16% unter den Biografien, der seit dem 19. Jahrhundert aber stetig steigt. Wagner et al. <span class="citation" data-cites="wagner_its_2015">(<a href="#ref-wagner_its_2015" role="doc-biblioref">Wagner et al. 2015</a>)</span> zeigen sogar, dass Frauen im Vergleich zu externen Referenzlisten erwähnenswerter Personen auf Wikipedia eher leicht über- als unterrepräsentiert sind. Auf sprachlicher und inhaltlicher Ebene fallen die Befunde dagegen deutlich konsistenter aus. Graells-Garrido et al. <span class="citation" data-cites="graells-garrido_first_2015">(<a href="#ref-graells-garrido_first_2015" role="doc-biblioref">Graells-Garrido et al. 2015</a>)</span> zeigen, dass Frauenbiografien stärker mit Ehe und Sexualität, Männerbiografien stärker mit kognitiven Prozessen assoziiert sind und Männer im Verlinkungsnetzwerk zentraler positioniert sind. Wagner et al. <span class="citation" data-cites="wagner_its_2015">(<a href="#ref-wagner_its_2015" role="doc-biblioref">Wagner et al. 2015</a>)</span> bestätigen über sechs Sprachversionen, darunter Deutsch, dass Begriffe aus den Kategorien Familie, Beziehung und Geschlecht deutlich häufiger in Frauenbiografien vorkommen. Sun und Peng <span class="citation" data-cites="sun_men_2021">(<a href="#ref-sun_men_2021" role="doc-biblioref">Sun and Peng 2021</a>)</span> erweitern diese Befunde um eine andere Perspektive: Private Ereignisse wie eine Heirat erscheinen bei Frauen sogar im Karriere-Abschnitt, bei Männern hingegen im Privatleben - ein Beleg dafür, dass private und berufliche Befunde bei Frauen stärker vermischt werden. Brun et al. <span class="citation" data-cites="brun_wikigender_2022">(<a href="#ref-brun_wikigender_2022" role="doc-biblioref">Brun et al. 2022</a>)</span> bestätigen dies mit einem Machine-Learning Ansatz: Frauen werden eher mit Familie, Männer eher mit Beruf und Sport asoziiert, und die für Frauen typischen Adjektive fallen zudem subjektiver aus.</p>
+<p>Als mögliche Erklärung wird in der Literatur häufig die demografische Schieflage der Wikipedia-Autor:innenschaft angeführt, von der laut Graells-Garrido et al. <span class="citation" data-cites="graells-garrido_first_2015">(<a href="#ref-graells-garrido_first_2015" role="doc-biblioref">Graells-Garrido et al. 2015</a>)</span> nur rund 16% Frauen sind. Dass die gefundenen inhaltlichen Unterschiede kaum auf reale psychologische Unterschiede zwischen den Geschlechtern zurückzuführen sind, legt Hydes Gender-Similarities-Hypothese <span class="citation" data-cites="hyde_gender_2005">(<a href="#ref-hyde_gender_2005" role="doc-biblioref">Hyde 2005</a>)</span> nahe (siehe Einleitung).</p>
+<p>Trotz dieser umfangreichen Forschung fällt auf, dass die meisten Studien entweder die englischsprachige Wikipedia oder allgemeine Personengruppen wie Prominente, Politiker:innen oder Sportler:innen in den Blick nehmen. Spezifisch auf Wissenschaftler:innen sind rar. Genau hier setzt unsere Arbeit an, indem sie Worthäufigkeits-, PMI- und Lexikon-basierte Methoden auf eine Stichprobe deutscher Wikipedia-Biografien von Wissenschaftler:innen anwendet.</p>
+</section>
+</section>
+<section id="daten-und-methode" class="level1">
+<h1>2 Daten und Methode</h1>
+<p>Daraus ergeben sich für uns folgende Forschungsfragen: 1. Bestehen sprachliche Unterschiede zwischen den Biografien von Wissenschaftler:innen? 2. Werden in Biografien bei Wissenschaftlerinnen eher private Themen (Familie, Ehe, Kinder) angesprochen, während bei Wissenschaftlern eher berufliche Themen (Karriereerfolge) im Vordergrund stehen?</p>
+<p>Daraus leiten wir folgende Hypothesen ab: - H1: Es besteht kein signifikanter Unterschied in der Wortwahl zwischen den Biografien von Wissenschaftlerinnen und Wissenschaftlern. - H2: In den Biografien von Wissenschaftlerinnen werden private Themen wie Familie, Kinder und Ehe häufiger erwähnt. - H3: In den Biografien von Wissenschaftlern werden berufliche Themen wie Karriere, Forschung und Auszeichnungen häufiger thematisiert werden.</p>
+<section id="datengrundlage" class="level2">
+<h2 class="anchored" data-anchor-id="datengrundlage">2.1 Datengrundlage</h2>
+<p>Für unsere Analyse werten wir 786 Wikipedia-Artikel aus<span class="citation" data-cites="wikipedia_2026">(<a href="#ref-wikipedia_2026" role="doc-biblioref"><span>“Wikipedia”</span> 2026</a>)</span>. Wir betrachen die Biographien von deutschen Wissenschaftler:innen, die zwischen 1950 und 2000 geboren sind. Denn der Jüngste Wissenschaftler, über den es eine Wikipedia-Biographie gibt, ist im Jahr 2000 geboren. So haben wir die letzten 50 Jahre mit einbezogen, um eher aktuelle Biographien zu berücksichtigen. Wir wollen eine aktuellere Analyse machen, denn es ist anzunehmen, dass vor allem in den letzten Jahren eine stärkere Sensibilisierung für Gender Bias stattgefunden hat, die sich in den Biographien widerspiegeln könnte.</p>
+<p>Zunächst haben wir mittels SPARKL-Abfrage eine Liste ausgeben lassen aller deutschen Wikipedia-Artikel Titel von Wissenschaftler:innen, die zwischen 1950 und 2000 geboren sind. Mit Hilfe der Wikipedia-API konnten wir dann die tatsächlichen Texte herunterladen und in einem DataFrame speichern. Dabei wurden die Artikel nach Geschlecht gefiltert, um zwei Gruppen zu bilden: männliche und weibliche Wissenschaftler:innen.</p>
+<div id="177af182749d0713" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_wiki <span class="op">=</span> pd.read_csv(<span class="st">"../data/wiki_results.csv"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df_wiki[<span class="st">"title"</span>] <span class="op">=</span> df_wiki[<span class="st">"article"</span>].<span class="bu">str</span>.split(<span class="st">"/"</span>).<span class="bu">str</span>[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df_wiki[<span class="st">"title"</span>] <span class="op">=</span> df_wiki[<span class="st">"title"</span>].<span class="bu">str</span>.replace(<span class="st">"_"</span>, <span class="st">" "</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>wiki <span class="op">=</span> wikipediaapi.Wikipedia(</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    language<span class="op">=</span><span class="st">'de'</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    user_agent<span class="op">=</span><span class="st">'research-project'</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> []</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> title <span class="kw">in</span> df_wiki[<span class="st">"title"</span>]:</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    page <span class="op">=</span> wiki.page(title)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> page.exists():</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        data.append({</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>            <span class="st">"title"</span>: title,</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>            <span class="st">"text"</span>: page.text</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        })</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(data)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df[<span class="st">"text"</span>][<span class="dv">0</span>][:<span class="dv">1000</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="geschlechterverteilung-in-den-wikipedia-biografien" class="level3">
+<h3 class="anchored" data-anchor-id="geschlechterverteilung-in-den-wikipedia-biografien">Geschlechterverteilung in den Wikipedia-Biografien</h3>
+<div id="78ddc5683c72ca6f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-06-18T18:10:29.220408Z&quot;,&quot;start_time&quot;:&quot;2026-05-29T11:37:56.593898Z&quot;}}" data-execution_count="76">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"../data/wikipedia_text.csv"</span>, sep <span class="op">=</span> <span class="st">","</span>) <span class="co">#Datensatz einlesen</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>plot_gender(data <span class="op">=</span> df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="wikipedia_scientists_files/figure-html/cell-5-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="preprocessing-stopwörter-tokenisierung-und-corpora" class="level2">
+<h2 class="anchored" data-anchor-id="preprocessing-stopwörter-tokenisierung-und-corpora">2.2 Preprocessing: Stopwörter, Tokenisierung und Corpora</h2>
+<p>Die Stoppwörter werden nach der Standardliste von NLTK für Deutsch und Englisch erweitert um häufige, aber wenig informative Wörter aus Wikipedia-Texten (z.B. “abgerufen”, “online”, “doi”). Die Tokenisierung erfolgt durch eine einfache Regex, die nur alphabetische Zeichen und deutsche Umlaute berücksichtigt. Wörter, die mit einem Großbuchstaben beginnen (vermutlich Substantive) werden ignoriert, um den Fokus auf Verben, Adjektive und andere Wortarten zu legen, die möglicherweise geschlechtsspezifische Assoziationen aufweisen. Gesamtheit aller Verben, die in den Texten der männlichen bzw. weiblichen Artikel vorkommen. Diese werden durch die Funktion <code>collect_corpora</code> erstellt, die die Texte der Artikel nach Geschlecht filtert und dann tokenisiert. Das Ergebnis ist ein Dictionary mit zwei Listen von Tokens: eine für “männlich” und eine für “weiblich”. Diese Corpora bilden die Grundlage für die anschließende Häufigkeitsanalyse und PMI-Berechnung.</p>
+<div id="1ac8dd732389d63d" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-06-18T18:10:29.221544Z&quot;,&quot;start_time&quot;:&quot;2026-05-29T11:38:00.552748Z&quot;}}" data-execution_count="77">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>STOPWORDS <span class="op">=</span> <span class="bu">set</span>(stopwords.words(<span class="st">"german"</span>)) <span class="op">|</span> <span class="bu">set</span>(stopwords.words(<span class="st">"english"</span>))</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>corpora <span class="op">=</span> {<span class="st">"männlich"</span>: [], <span class="st">"weiblich"</span>: []}</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>preprocessing(data <span class="op">=</span> df, STOPWORDS <span class="op">=</span> STOPWORDS, corpus <span class="op">=</span> corpora)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="ergebnisse" class="level1">
+<h1>Ergebnisse</h1>
+<section id="häufigkeitsanalyse-und-rang-korrelation" class="level2">
+<h2 class="anchored" data-anchor-id="häufigkeitsanalyse-und-rang-korrelation">3.1 Häufigkeitsanalyse und Rang-Korrelation</h2>
+<p>Die Funktion <code>word_frequencies</code> berechnet die relative Häufigkeit jedes Tokens in einem gegebenen Corpus, indem sie die Anzahl der Vorkommen eines Tokens durch die Gesamtzahl der Tokens teilt. Das Ergebnis ist ein Dictionary, das jedem Token seine relative Häufigkeit zuordnet. Die Funktion <code>rank_correlation</code> berechnet die Spearman-Rangkorrelation zwischen den Häufigkeiten der gemeinsamen Tokens in den männlichen und weiblichen Corpora. Sie identifiziert die gemeinsamen Tokens, extrahiert ihre Häufigkeiten aus beiden Corpora und berechnet dann die Spearman-Korrelation, um zu bewerten, wie ähnlich die Rangordnungen der Token-Häufigkeiten zwischen den beiden Gruppen sind. Das Ergebnis umfasst den Korrelationskoeffizienten (ρ), den p-Wert und die Anzahl der gemeinsamen Tokens, die in die Berechnung einbezogen wurden.</p>
+<section id="interpretation-rang-korrelation" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-rang-korrelation">Interpretation Rang Korrelation</h3>
+<p>Ein hoher Spearman-Korrelationskoeffizient (ρ) nahe 1 würde darauf hindeuten, dass die Rangordnungen der Token-Häufigkeiten in den männlichen und weiblichen Corpora sehr ähnlich sind, was auf eine geringe sprachliche Verzerrung hinweisen könnte. Ein niedrigerer ρ-Wert würde hingegen auf größere Unterschiede in der Wortwahl zwischen den beiden Gruppen hindeuten, was auf ein sehr unterschiedliches Vokabular hindeuten.</p>
+<p>Die Rangkorrelation von ρ = 0.52 in unserer Analyse steht für eine moderate positive Korrelation zwischen den Häufigkeiten der gemeinsamen Tokens in den männlichen und weiblichen Biografien. Das bedeutet, dass es eine gewisse Ähnlichkeit in der Wortwahl gibt, aber auch signifikante Unterschiede. Einige Wörter könnten in beiden Gruppen häufig vorkommen, während andere möglicherweise in einer Gruppe deutlich häufiger sind als in der anderen. Der p-Wert von 2.3e-16 zeigt, dass diese Korrelation statistisch hoch signifikant ist, was darauf hindeutet, dass die beobachtete Ähnlichkeit nicht zufällig ist. Insgesamt deutet dies auf eine gewisse Überschneidung im Vokabular hin, aber auch auf spezifische Unterschiede in der Wortwahl zwischen männlichen und weiblichen Biografien.</p>
+<p>Vokabular ist mäßig ähnlich Die Grundsprache ist dieselbe, aber es gibt systematische Unterschiede mehr als zwischen zwei verschiedenen Sprachen (Referenzwert 0.54), was bedeutet Männer und Frauen werden sprachlich unterschiedlicher beschrieben als man erwarten würde.</p>
+<div id="initial_id" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-06-18T18:10:29.227006Z&quot;,&quot;start_time&quot;:&quot;2026-05-29T11:39:15.243829Z&quot;}}" data-execution_count="78">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>rang_corr(corpus <span class="op">=</span> corpora)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rang-Korrelation (gemeinsames Vokabular, n=520):
+  ρ = 0.705  p = 2.27e-79</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="pmi-wortassoziationen-pro-gruppe" class="level2">
+<h2 class="anchored" data-anchor-id="pmi-wortassoziationen-pro-gruppe">3.2 PMI: Wortassoziationen pro Gruppe</h2>
+<p>PMI (Pointwise Mutual Information) misst die Stärke der Assoziation zwischen einem Wort und einer Gruppe (männlich oder weiblich) im Vergleich zur allgemeinen Häufigkeit des Wortes. Ein hoher PMI-Wert für ein Wort in der Gruppe “weiblich” würde darauf hindeuten, dass dieses Wort deutlich häufiger in den Biografien von Wissenschaftlerinnen vorkommt als Hier erkennt man, welche Wörter mit welchem Geschlecht verbunden werden. Dabei wir explorativ vorgegangen, wegen alle Stoppwörter und andere Wörter, die für unser Analyse weniger relevant sind entfernt wurden, da sie sonst das Ergebnis verfälschen würden (z.B. “sein”, “haben”, “werden” etc.). Es werden nur Wörter betrachtet, die mindestens 60 Mal in den gesamten Corpora vorkommen, um eine gewisse Relevanz sicherzustellen und Rauschen durch seltene Wörter zu vermeiden. Ein hoher PMI-Wert für ein Wort in der Gruppe “weiblich” würde darauf hindeuten, dass dieses Wort deutlich häufiger in den Biografien von Wissenschaftlerinnen vorkommt als in denen von Wissenschaftlern, relativ zu seiner allgemeinen Häufigkeit. Umgekehrt würde ein hoher PMI-Wert für ein Wort in der Gruppe “männlich” darauf hindeuten, dass es stärker mit männlichen Biografien assoziiert ist. Durch die Berechnung von PMI können wir also herausfinden, welche Wörter besonders charakteristisch für die Biografien von Wissenschaftlerinnen bzw. Wissenschaftlern sind und damit mögliche geschlechtsspezifische Assoziationen in der Sprache aufdecken.</p>
+<ul>
+<li>Männlich: habilitierte, berufen, ernannt, gründete, übernahm formale Karriereschritte, Männer werden über institutionelle Positionen und Errungenschaften beschrieben.</li>
+<li>Weiblich: erste, begann, geboren, lehrte, leitete narrative Lebensgeschichte, Frauen werden chronologisch erzählt, mit Betonung dass sie Ausnahmen waren (erste).</li>
+</ul>
+<div id="f8d2868ee9f1d408" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-06-18T18:10:29.227862Z&quot;,&quot;start_time&quot;:&quot;2026-05-29T11:41:22.664151Z&quot;}}" data-execution_count="79">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pmi(corpus <span class="op">=</span> corpora)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Top 10 männlich assoziierte Wörter (PMI):
+  habilitieren              +0.496
+  befassen                  +0.390
+  berufen                   +0.389
+  beteiligen                +0.304
+  treten                    +0.280
+  abgerufen                 +0.259
+  ernennen                  +0.233
+  übernehmen                +0.205
+  gründen                   +0.192
+  wählen                    +0.171
+
+Top 10 weiblich assoziierte Wörter (PMI):
+  gebären                   +0.368
+  beginnen                  +0.365
+  beschäftigen              +0.346
+  leiten                    +0.292
+  führen                    +0.282
+  halten                    +0.256
+  erwerben                  +0.252
+  lehren                    +0.192
+  forschen                  +0.162
+  untersuchen               +0.123</code></pre>
+</div>
+</div>
+<section id="scatterplot" class="level3">
+<h3 class="anchored" data-anchor-id="scatterplot">Scatterplot</h3>
+<p>Der Scatter-Plot zeigt die log-Häufigkeit eines Wortes bei männlichen vs.&nbsp;weiblichen Wissenschaftlern. - Die Diagonale (y = x) - Wörter auf der Linie kommen bei beiden Geschlechtern gleich häufig vor - Das sind meist neutrale Inhaltswörter (z.B. “Forschung”, “Universität”) - Abweichungen von der Diagonale - Wörter oberhalb häufiger bei weiblichen Wissenschaftlerinnen - Wörter unterhalb häufiger bei männlichen Wissenschaftlern - Je weiter weg von der Linie, desto stärker der Unterschied -</p>
+<div id="e071533edc0d878b" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-06-18T18:10:29.228589Z&quot;,&quot;start_time&quot;:&quot;2026-05-29T11:50:59.142461Z&quot;}}" data-execution_count="89">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>plot_pmi({<span class="st">"männlich"</span>: pmi_männlich, <span class="st">"weiblich"</span>: pmi_weiblich}, top_n<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>plot_rank_scatter(freq_m <span class="op">=</span> freq_m , freq_f <span class="op">=</span> freq_f)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="wikipedia_scientists_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="wikipedia_scientists_files/figure-html/cell-9-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="lexikon-basierter-ansatz" class="level2">
+<h2 class="anchored" data-anchor-id="lexikon-basierter-ansatz">3.3 Lexikon-basierter Ansatz</h2>
+<div id="aa0866db4e8c9797" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-06-18T18:10:29.229135Z&quot;,&quot;start_time&quot;:&quot;2026-05-29T11:51:00.928935Z&quot;}}" data-execution_count="90">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>LEXIKA <span class="op">=</span> {</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Familie"</span>: {</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"kind"</span>, <span class="st">"kinder"</span>, <span class="st">"mutter"</span>, <span class="st">"vater"</span>, <span class="st">"familie"</span>, <span class="st">"familien"</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">"heirat"</span>, <span class="st">"heiratete"</span>, <span class="st">"hochzeit"</span>, <span class="st">"ehe"</span>, <span class="st">"ehemann"</span>, <span class="st">"ehefrau"</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"tochter"</span>, <span class="st">"sohn"</span>, <span class="st">"geschwister"</span>, <span class="st">"eltern"</span>, <span class="st">"großeltern"</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"geburt"</span>, <span class="st">"geboren"</span>, <span class="st">"schwanger"</span>, <span class="st">"haushalt"</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Karriere"</span>: {</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"arbeit"</span>, <span class="st">"beruf"</span>, <span class="st">"karriere"</span>, <span class="st">"stelle"</span>, <span class="st">"position"</span>, <span class="st">"amt"</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"professur"</span>, <span class="st">"promotion"</span>, <span class="st">"habilitation"</span>, <span class="st">"gehalt"</span>, <span class="st">"preis"</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"auszeichnung"</span>, <span class="st">"award"</span>, <span class="st">"stipendium"</span>, <span class="st">"forschung"</span>, <span class="st">"labor"</span>,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"publikation"</span>, <span class="st">"veröffentlichung"</span>, <span class="st">"patent"</span>, <span class="st">"erfindung"</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="funtktionen-auslagern" class="level1">
+<h1>FUNTKTIONEN AUSLAGERN</h1>
+<div id="24b0fb8a4892d8e1" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-06-18T18:10:29.229966Z&quot;,&quot;start_time&quot;:&quot;2026-05-29T11:51:02.107892Z&quot;}}" data-execution_count="92">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> main():</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    ergebnisse <span class="op">=</span> lexikon_analyse(corpora, LEXIKA)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Lexikon-Analyse (pro 1000 Wörter):"</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> kategorie, werte <span class="kw">in</span> ergebnisse.items():</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">  </span><span class="sc">{</span>kategorie<span class="sc">}</span><span class="ss">:"</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> gender, wert <span class="kw">in</span> werte.items():</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"    </span><span class="sc">{</span>gender<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>wert<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    plot_lexikon(ergebnisse)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">"__main__"</span>:</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    main()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Lexikon-Analyse (pro 1000 Wörter):
+
+  Familie:
+    männlich: 0.00
+    weiblich: 0.00
+
+  Karriere:
+    männlich: 0.00
+    weiblich: 0.22</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="wikipedia_scientists_files/figure-html/cell-11-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-brun_wikigender_2022" class="csl-entry" role="listitem">
+Brun, Natalie Bolón, Sofia Kypraiou, Natalia Gullón Altés, and Irene Petlacalco Barrios. 2022. <em>Wikigender: <span>A</span> <span>Machine</span> <span>Learning</span> <span>Model</span> to <span>Detect</span> <span>Gender</span> <span>Bias</span> in <span>Wikipedia</span></em>. arXiv. <a href="https://doi.org/10.48550/arXiv.2211.07520">https://doi.org/10.48550/arXiv.2211.07520</a>.
+</div>
+<div id="ref-collins_black_1990" class="csl-entry" role="listitem">
+Collins, Patricia Hill. 1990. <em>Black Feminist Thought: Knowledge, Consciousness, and the Politics of Empowerment</em>. Unwin Hyman. <a href="https://files.commons.gc.cuny.edu/wp-content/blogs.dir/17925/files/2021/08/patricia_hill_collins_black_feminist_thought_in_the_matrix_of_domination.pdf">https://files.commons.gc.cuny.edu/wp-content/blogs.dir/17925/files/2021/08/patricia_hill_collins_black_feminist_thought_in_the_matrix_of_domination.pdf</a>.
+</div>
+<div id="ref-dignazio_data_2020" class="csl-entry" role="listitem">
+D’Ignazio, Catherine, and Lauren F. Klein. 2020. <em>Data Feminism</em>. The MIT Press. <a href="https://data-feminism.mitpress.mit.edu/">https://data-feminism.mitpress.mit.edu/</a>.
+</div>
+<div id="ref-graells-garrido_first_2015" class="csl-entry" role="listitem">
+Graells-Garrido, Eduardo, Mounia Lalmas, and Filippo Menczer. 2015. <span>“First <span>Women</span>, <span>Second</span> <span>Sex</span>: <span>Gender</span> <span>Bias</span> in <span>Wikipedia</span>.”</span> <em>Proceedings of the 26th <span>ACM</span> <span>Conference</span> on <span>Hypertext</span> &amp; <span>Social</span> <span>Media</span></em>, <span>HT</span> ’15, August, 165–74. <a href="https://doi.org/10.1145/2700171.2791036">https://doi.org/10.1145/2700171.2791036</a>.
+</div>
+<div id="ref-hyde_gender_2005" class="csl-entry" role="listitem">
+Hyde, Janet Shibley. 2005. <span>“The Gender Similarities Hypothesis.”</span> <em>The American Psychologist</em> 60 (6): 581–92. <a href="https://doi.org/10.1037/0003-066X.60.6.581">https://doi.org/10.1037/0003-066X.60.6.581</a>.
+</div>
+<div id="ref-konieczny_gender_2018" class="csl-entry" role="listitem">
+Konieczny, Piotr, and Maximilian Klein. 2018. <span>“Gender Gap Through Time and Space: <span>A</span> Journey Through <span>Wikipedia</span> Biographies via the <span>Wikidata</span> <span>Human</span> <span>Gender</span> <span>Indicator</span>.”</span> <em>New Media &amp; Society</em> 20 (12): 4608–33. <a href="https://doi.org/10.1177/1461444818779080">https://doi.org/10.1177/1461444818779080</a>.
+</div>
+<div id="ref-sun_men_2021" class="csl-entry" role="listitem">
+Sun, Jiao, and Nanyun Peng. 2021. <em>Men <span>Are</span> <span>Elected</span>, <span>Women</span> <span>Are</span> <span>Married</span>: <span>Events</span> <span>Gender</span> <span>Bias</span> on <span>Wikipedia</span></em>. <a href="https://doi.org/10.48550/arXiv.2106.01601">https://doi.org/10.48550/arXiv.2106.01601</a>.
+</div>
+<div id="ref-wagner_its_2015" class="csl-entry" role="listitem">
+Wagner, Claudia, David Garcia, Mohsen Jadidi, and Markus Strohmaier. 2015. <em>It’s a <span>Man</span>’s <span>Wikipedia</span>? <span>Assessing</span> <span>Gender</span> <span>Inequality</span> in an <span>Online</span> <span>Encyclopedia</span></em>. <a href="https://doi.org/10.48550/arXiv.1501.06307">https://doi.org/10.48550/arXiv.1501.06307</a>.
+</div>
+<div id="ref-wikipedia_2026" class="csl-entry" role="listitem">
+<span>“Wikipedia.”</span> 2026. In <em>Wikipedia</em>. <a href="https://de.wikipedia.org/wiki/Wikipedia:Hauptseite">https://de.wikipedia.org/wiki/Wikipedia:Hauptseite</a>.
+</div>
+</div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
