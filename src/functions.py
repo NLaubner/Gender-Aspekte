@@ -169,7 +169,7 @@ def plot_lexikon(ergebnisse: dict):
 def plot_gender(data):
     counts = data.groupby("genderLabel").size()
 
-    fig, ax = plt.subplots(figsize=(8, 5))
+    fig, ax = plt.subplots(figsize=(10, 5))
 
     colors = [COLORS[gender] for gender in counts.index]
 
@@ -200,7 +200,7 @@ def plot_gender(data):
 
 # Plot zur Pointwise Mutual Information (PMI)
 def plot_pmi(pmi_data: dict, top_n: int = 20):
-    fig, axes = plt.subplots(1, 2, figsize=(14, 7))
+    fig, axes = plt.subplots(1, 2, figsize=(10, 5))
     fig.patch.set_facecolor("#fcfbf9")
 
     for ax, gender in zip(axes, ("männlich", "weiblich")):
@@ -210,7 +210,7 @@ def plot_pmi(pmi_data: dict, top_n: int = 20):
 
         ax.barh(y_pos, scores, color=COLORS[gender], alpha=0.85, height=0.6)
         ax.set_yticks(y_pos)
-        ax.set_yticklabels(words, fontsize=10, color="#0C447C")
+        ax.set_yticklabels(words, fontsize=12, color="#0C447C")
         ax.invert_yaxis()
 
         ax.set_facecolor("#fcfbf9")
@@ -228,9 +228,9 @@ def plot_pmi(pmi_data: dict, top_n: int = 20):
         ax.set_xlim(x_min, x_max)
 
     plt.suptitle("Wortassoziationen nach Geschlecht (PMI)",
-                 fontsize=20, fontweight="bold", color="#042C53", y=1.01)
+                 fontsize=20, pad=15, color="#042C53", y=1.01)
     plt.tight_layout()
-    plt.savefig("../figures/pmi.png", dpi=150)
+    plt.savefig("../figures/pmi.png", dpi=300)
     plt.show()
 
 # Scatterplot zur PMI
@@ -241,7 +241,7 @@ def plot_rank_scatter(freq_m: dict, freq_f: dict):
     fm = np.array([freq_m[w] for w in words])
     ff = np.array([freq_f[w] for w in words])
 
-    fig, ax = plt.subplots(figsize=(9, 9))
+    fig, ax = plt.subplots(figsize=(10, 5))
     fig.patch.set_facecolor("#fcfbf9")
     ax.set_facecolor("#fcfbf9")
 
@@ -269,7 +269,7 @@ def plot_rank_scatter(freq_m: dict, freq_f: dict):
 
     ax.spines[["top", "right"]].set_visible(False)
     ax.spines[["bottom", "left"]].set_color("#B5D4F4")
-    ax.tick_params(axis="both", colors="#378ADD", labelsize=9)
+    ax.tick_params(axis="both", colors="#378ADD", labelsize=12)
     ax.grid(color="#B5D4F4", linestyle="--", linewidth=0.6, alpha=0.7)
 
     ax.set_xlabel("log₁₀(Häufigkeit) — männliche Wissenschaftler",

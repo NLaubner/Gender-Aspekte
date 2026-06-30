@@ -26,7 +26,10 @@ conda activate nameofyourenv
 ```bash
 pip install -r requirements.txt
 ``` 
-4. Run the analysis 
+4. Run the analysis or render quarto
 ```
 run notebooks/wikipedia_scientists.ipynb
+
+quarto render notebooks/wikipedia_scientists.ipynb --to html
+
 ```
