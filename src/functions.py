@@ -109,22 +109,38 @@ def pmi(corpus):
 # Lexikon-Analyse und Plot
 def lexikon_analyse(corpora: dict, lexika: dict):
     ergebnisse = {}
+
     for kategorie, woerter in lexika.items():
+        print(f"\n{kategorie}:")
+
+        # Wort-Differenzen berechnen
+        diffs = []
+        for w in woerter:
+            freq_m = corpora["männlich"].count(w) / len(corpora["männlich"]) * 1000
+            freq_w = corpora["weiblich"].count(w) / len(corpora["weiblich"]) * 1000
+            diffs.append((w, freq_w - freq_m))
+        diffs.sort(key=lambda x: x[1], reverse=True)
+
+        for w, d in diffs:
+            print(f"  {w:<20} {d:+.3f}")
+
+        # Lexikon-Häufigkeiten berechnen
         ergebnisse[kategorie] = {}
-        for gender, word in corpora.items():
-            total = len(word)
-            treffer = sum(1 for t in word if t in woerter)
+        for gender, tokens in corpora.items():
+            total = len(tokens)
+            treffer = sum(1 for t in tokens if t in woerter)
             ergebnisse[kategorie][gender] = treffer / total * 1000
-    for kategorie in ergebnisse:
+
+        # Chi-Quadrat-Test
         m = ergebnisse[kategorie]["männlich"]
-    w = ergebnisse[kategorie]["weiblich"]
-    # absolute Treffer rekonstruieren
-    n_m = len(corpora["männlich"])
-    n_w = len(corpora["weiblich"])
-    tabelle = [[m/1000*n_m, n_m - m/1000*n_m],
-               [w/1000*n_w, n_w - w/1000*n_w]]
-    chi2, p, _, _ = chi2_contingency(tabelle)
-    print(f"{kategorie}: χ²={chi2:.2f}, p={p:.4f}")
+        w = ergebnisse[kategorie]["weiblich"]
+        n_m = len(corpora["männlich"])
+        n_w = len(corpora["weiblich"])
+        tabelle = [[m / 1000 * n_m, n_m - m / 1000 * n_m],
+                   [w / 1000 * n_w, n_w - w / 1000 * n_w]]
+        chi2, p, _, _ = chi2_contingency(tabelle)
+        print(f"  → χ²={chi2:.2f}, p={p:.4f}")
+
     return ergebnisse
 
 def plot_lexikon(ergebnisse: dict):
@@ -144,6 +160,7 @@ def plot_lexikon(ergebnisse: dict):
     ax.set_title("Lexikon-Analyse nach Geschlecht")
     ax.legend()
     plt.tight_layout()
+    plt.savefig("../figures/lexikon.png", dpi=150)
     plt.show()
 
 # Visualisierungen
@@ -178,7 +195,7 @@ def plot_gender(data):
     ax.set_title("Verteilung Geschlechter", fontsize=20, fontweight="bold",
                  color="#042C53", pad=15)
     plt.tight_layout()
-    plt.savefig("../figures/verteilung_geschlechter.png", dpi=300)
+    plt.savefig("../figures/verteilung_geschlechter.png", dpi=150)
     plt.show()
 
 # Plot zur Pointwise Mutual Information (PMI)
@@ -213,6 +230,7 @@ def plot_pmi(pmi_data: dict, top_n: int = 20):
     plt.suptitle("Wortassoziationen nach Geschlecht (PMI)",
                  fontsize=20, fontweight="bold", color="#042C53", y=1.01)
     plt.tight_layout()
+    plt.savefig("../figures/pmi.png", dpi=150)
     plt.show()
 
 # Scatterplot zur PMI
@@ -272,4 +290,5 @@ def plot_rank_scatter(freq_m: dict, freq_f: dict):
         text.set_color("#185FA5")
 
     plt.tight_layout()
+    plt.savefig("../figures/scatter.png", dpi=150)
     plt.show()
