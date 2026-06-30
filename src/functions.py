@@ -157,10 +157,10 @@ def plot_lexikon(ergebnisse: dict):
     ax.set_xticks(x)
     ax.set_xticklabels(kategorien)
     ax.set_ylabel("Häufigkeit pro 1000 Wörter")
-    ax.set_title("Lexikon-Analyse nach Geschlecht")
+    ax.set_title("Lexikon-Analyse nach Geschlecht", fontsize=20, pad=15)
     ax.legend()
-    plt.tight_layout()
-    plt.savefig("../figures/lexikon.png", dpi=150)
+    plt.tight_layout(pad=2)
+    plt.savefig("../figures/lexikon.png", dpi=300)
     plt.show()
 
 # Visualisierungen
@@ -192,7 +192,7 @@ def plot_gender(data):
     ax.tick_params(axis="y", colors="#378ADD", labelsize=10)
     ax.grid(axis="y", color="#B5D4F4", linestyle="--", linewidth=0.7, alpha=0.7)
     ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
-    ax.set_title("Verteilung Geschlechter", fontsize=20, fontweight="bold",
+    ax.set_title("Verteilung Geschlechter", fontsize=20,
                  color="#042C53", pad=15)
     plt.tight_layout()
     plt.savefig("../figures/verteilung_geschlechter.png", dpi=150)
@@ -220,7 +220,7 @@ def plot_pmi(pmi_data: dict, top_n: int = 20):
         ax.tick_params(axis="y", colors="#0C447C", labelsize=12)
         ax.grid(axis="x", color="#B5D4F4", linestyle="--", linewidth=0.6, alpha=0.7)
         ax.set_xlabel("PMI (Bits)")
-        ax.set_title(f"Top-Wörter assoziiert mit {'männlichen' if gender == 'männlich' else 'weiblichen'} Wissenschaftler:innen")
+        ax.set_title(f"Top-Wörter assoziiert mit {'männlichen' if gender == 'männlich' else 'weiblichen'} Wissenschaftler:innen", fontsize=20, pad = 15)
         ax.axvline(0, color="#185FA5", linewidth=0.9, linestyle="-")
     x_min = min(ax.get_xlim()[0] for ax in axes)
     x_max = max(ax.get_xlim()[1] for ax in axes)
@@ -277,7 +277,7 @@ def plot_rank_scatter(freq_m: dict, freq_f: dict):
     ax.set_ylabel("log₁₀(Häufigkeit) — weibliche Wissenschaftler",
                   fontsize=11, color="#185FA5", labelpad=8)
     ax.set_title("Worthäufigkeits-Scatter (gemeinsamer Wortschatz)",
-                 fontsize=13, fontweight="bold", color="#042C53", pad=12)
+                 fontsize=20, color="#042C53", pad=15)
 
     rho, p = spearmanr(fm, ff)
     ax.text(0.05, 0.95, f"Spearman ρ = {rho:.2f}",
