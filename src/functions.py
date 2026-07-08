@@ -221,14 +221,14 @@ def plot_pmi(pmi_data: dict, top_n: int = 20):
         ax.grid(axis="x", color="#B5D4F4", linestyle="--", linewidth=0.6, alpha=0.7)
         ax.set_xlabel("PMI (Bits)")
         ax.set_title(f"Top-Wörter assoziiert mit {'männlichen' if gender == 'männlich' else 'weiblichen'} Wissenschaftler:innen", fontsize=20, pad = 15)
-        ax.axvline(0, color="#185FA5", linewidth=0.9, linestyle="-")
+        ax.axvline(0, color="#185FA5", linewidth=0.9, linestyle="-",  pad=15)
     x_min = min(ax.get_xlim()[0] for ax in axes)
     x_max = max(ax.get_xlim()[1] for ax in axes)
     for ax in axes:
         ax.set_xlim(x_min, x_max)
 
     plt.suptitle("Wortassoziationen nach Geschlecht (PMI)",
-                 fontsize=20, pad=15, color="#042C53", y=1.01)
+                 fontsize=14, color="#042C53", y=1.01)
     plt.tight_layout()
     plt.savefig("../figures/pmi.png", dpi=300)
     plt.show()
