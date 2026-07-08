@@ -164,7 +164,7 @@ def plot_lexikon(ergebnisse: dict):
 def plot_gender(data):
     counts = data.groupby("genderLabel").size()
 
-    fig, ax = plt.subplots(figsize=(10, 5))
+    fig, ax = plt.subplots(figsize=(8, 3))
 
     colors = [COLORS[gender] for gender in counts.index]
 
@@ -240,7 +240,7 @@ def plot_rank_scatter(freq_m: dict, freq_f: dict):
     fm = np.array([freq_m[w] for w in words])
     ff = np.array([freq_f[w] for w in words])
 
-    fig, ax = plt.subplots(figsize=(10, 5))
+    fig, ax = plt.subplots(figsize=(8, 3))
     fig.patch.set_facecolor("#fcfbf9")
     ax.set_facecolor("#fcfbf9")
 

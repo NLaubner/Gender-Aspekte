@@ -2,6 +2,7 @@
 ## Gender Bias in Wikipedia-Biografien in der Wissenschaft
 
 **Authors:** Nico Laubner, Alison Moldovan-Mauer
+
 ## Live-Ansicht
 [Zur Analyse](https://NLaubner.github.io/Gender-Aspekte/)
 
