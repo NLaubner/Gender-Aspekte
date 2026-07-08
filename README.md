@@ -3,7 +3,7 @@
 
 **Authors:** Nico Laubner, Alison Moldovan-Mauer
 
-## Live-Ansicht
+## GitHub Pages Seite zum Gleich ansehen:
 [Zur Analyse](https://NLaubner.github.io/Gender-Aspekte/)
 
 ## Struktur
@@ -18,9 +18,9 @@
 
 
 ## Installation
-1. Create a environment with the right python version (3.14.4)
+1. Create a environment with the right python version (3.12)
 ```
-conda create -name nameofyourenv python=3.14.4
+conda create --name nameofyourenv python=3.12
 ```
 2. Activate your Environment
 ```
@@ -30,10 +30,7 @@ conda activate nameofyourenv
 ```bash
 pip install -r requirements.txt
 ``` 
-4. Run the analysis or render quarto
+4. Run the analysis manually or render quarto
 ```
-run notebooks/wikipedia_scientists.ipynb
-
-quarto render notebooks/wikipedia_scientists.ipynb --to html or --to pdf
-
+quarto preview notebooks/wikipedia_scientists.ipynb
 ```

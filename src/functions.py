@@ -109,6 +109,7 @@ def lexikon_analyse(corpora: dict, lexika: dict):
 
     for kategorie, woerter in lexika.items():
         ergebnisse[kategorie] = {}
+
         for gender, tokens in corpora.items():
             total = len(tokens)
             treffer = sum(1 for t in tokens if t in woerter)
@@ -116,24 +117,40 @@ def lexikon_analyse(corpora: dict, lexika: dict):
 
         m = ergebnisse[kategorie]["männlich"]
         w = ergebnisse[kategorie]["weiblich"]
+        diff = w - m
+
         n_m = len(corpora["männlich"])
         n_w = len(corpora["weiblich"])
 
-        tabelle = [[m / 1000 * n_m, n_m - m / 1000 * n_m],
-                   [w / 1000 * n_w, n_w - w / 1000 * n_w]]
+        tabelle = [
+            [m / 1000 * n_m, n_m - m / 1000 * n_m],
+            [w / 1000 * n_w, n_w - w / 1000 * n_w]
+        ]
         chi2, p, _, _ = chi2_contingency(tabelle)
+
+        diffs = []
+        for word in woerter:
+            freq_m = corpora["männlich"].count(word) / n_m * 1000
+            freq_w = corpora["weiblich"].count(word) / n_w * 1000
+            diffs.append((word, freq_w - freq_m))
+
+        top_m = sorted(diffs, key=lambda x: x[1])[:2]
+        top_w = sorted(diffs, key=lambda x: x[1], reverse=True)[:2]
 
         rows.append({
             "Kategorie": kategorie,
-            "männlich (‰)": round(m, 3),
-            "weiblich (‰)": round(w, 3),
-            "Differenz (w−m)": round(w - m, 3),
+            "Männlich": round(m, 3),
+            "Weiblich": round(w, 3),
+            "Differenz (w−m)": round(diff, 3),
             "χ²": round(chi2, 2),
-            "p-Wert": round(p, 4)
+            "p-Wert": round(p, 4),
         })
 
+        print(f"\n{kategorie}")
+        print("Top männlich:", ", ".join(f"{word} ({d:+.1f})" for word, d in top_m))
+        print("Top weiblich:", ", ".join(f"{word} ({d:+.1f})" for word, d in top_w))
+
     df = pd.DataFrame(rows)
-    df = df[df["Differenz (w−m)"].abs() >= 0.5]  # Filter anpassen
     display(df.sort_values("Differenz (w−m)", ascending=False))
 
     return ergebnisse
@@ -143,7 +160,7 @@ def plot_lexikon(ergebnisse: dict):
     x = np.arange(len(kategorien))
     breite = 0.35
 
-    fig, ax = plt.subplots(figsize=(10, 5))
+    fig, ax = plt.subplots(figsize=(9, 5))
     ax.bar(x - breite/2, [ergebnisse[k]["männlich"] for k in kategorien],
            breite, label="Männlich", color=COLORS["männlich"])
     ax.bar(x + breite/2, [ergebnisse[k]["weiblich"] for k in kategorien],
@@ -164,7 +181,7 @@ def plot_lexikon(ergebnisse: dict):
 def plot_gender(data):
     counts = data.groupby("genderLabel").size()
 
-    fig, ax = plt.subplots(figsize=(8, 3))
+    fig, ax = plt.subplots(figsize=(9, 5))
 
     colors = [COLORS[gender] for gender in counts.index]
 
@@ -229,7 +246,7 @@ def plot_pmi(pmi_data: dict, top_n: int = 20):
     fig.suptitle("Wortassoziationen nach Geschlecht (PMI)",
                  fontsize=20, color="#042C53", y=1.03)
     plt.tight_layout()
-    plt.savefig("../figures/pmi.png", dpi=300)
+    plt.savefig("../figures/pmi.png", dpi=300,  bbox_inches="tight")
     plt.show()
 
 # Scatterplot zur PMI
@@ -240,7 +257,7 @@ def plot_rank_scatter(freq_m: dict, freq_f: dict):
     fm = np.array([freq_m[w] for w in words])
     ff = np.array([freq_f[w] for w in words])
 
-    fig, ax = plt.subplots(figsize=(8, 3))
+    fig, ax = plt.subplots(figsize=(14, 6))
     fig.patch.set_facecolor("#fcfbf9")
     ax.set_facecolor("#fcfbf9")
 
@@ -248,22 +265,10 @@ def plot_rank_scatter(freq_m: dict, freq_f: dict):
 
     interesting = sorted(common, key=lambda w: abs(freq_m[w] - freq_f[w]),
                          reverse=True)[:12]
-
-    MANUELLE_OFFSETS = {
-    "studieren": (25, 18), 
-    }
-
     texts = []
     for w in interesting:
         x, y = np.log10(freq_m[w]), np.log10(freq_f[w])
-        if w in MANUELLE_OFFSETS:
-            dx, dy = MANUELLE_OFFSETS[w]
-            ax.annotate(w, xy=(x, y), xytext=(dx, dy), textcoords="offset points",
-                    fontsize=11, color="#042C53", alpha=0.9,
-                    arrowprops=dict(arrowstyle="-", color="#378ADD", lw=0.7))
-        else:
-            texts.append(ax.text(x, y, w, fontsize=11, color="#042C53", alpha=0.9))
-
+        texts.append(ax.text(x, y, w, fontsize=11, color="#042C53", alpha=0.9))
     adjust_text(
         texts,
         ax=ax,
