@@ -4,6 +4,7 @@ zur Visualisierung der Ergebnisse.
 """
 import numpy as np
 import math
+import pandas as pd
 from adjustText import adjust_text
 from collections import Counter, defaultdict
 import matplotlib.pyplot as plt
@@ -99,39 +100,41 @@ def pmi(corpus):
 
 
 # Lexikon-Analyse und Plot
+def normalisiere_genus(tokens, mapping):
+    return [mapping.get(t, t) for t in tokens]
+
 def lexikon_analyse(corpora: dict, lexika: dict):
     ergebnisse = {}
+    rows = []
 
     for kategorie, woerter in lexika.items():
-        print(f"\n{kategorie}:")
-
-        # Wort-Differenzen berechnen
-        diffs = []
-        for w in woerter:
-            freq_m = corpora["männlich"].count(w) / len(corpora["männlich"]) * 1000
-            freq_w = corpora["weiblich"].count(w) / len(corpora["weiblich"]) * 1000
-            diffs.append((w, freq_w - freq_m))
-        diffs.sort(key=lambda x: x[1], reverse=True)
-
-        for w, d in diffs:
-            print(f"  {w:<20} {d:+.3f}")
-
-        # Lexikon-Häufigkeiten berechnen
         ergebnisse[kategorie] = {}
         for gender, tokens in corpora.items():
             total = len(tokens)
             treffer = sum(1 for t in tokens if t in woerter)
             ergebnisse[kategorie][gender] = treffer / total * 1000
 
-        # Chi-Quadrat-Test
         m = ergebnisse[kategorie]["männlich"]
         w = ergebnisse[kategorie]["weiblich"]
         n_m = len(corpora["männlich"])
         n_w = len(corpora["weiblich"])
+
         tabelle = [[m / 1000 * n_m, n_m - m / 1000 * n_m],
                    [w / 1000 * n_w, n_w - w / 1000 * n_w]]
         chi2, p, _, _ = chi2_contingency(tabelle)
-        print(f"  → χ²={chi2:.2f}, p={p:.4f}")
+
+        rows.append({
+            "Kategorie": kategorie,
+            "männlich (‰)": round(m, 3),
+            "weiblich (‰)": round(w, 3),
+            "Differenz (w−m)": round(w - m, 3),
+            "χ²": round(chi2, 2),
+            "p-Wert": round(p, 4)
+        })
+
+    df = pd.DataFrame(rows)
+    df = df[df["Differenz (w−m)"].abs() >= 0.5]  # Filter anpassen
+    display(df.sort_values("Differenz (w−m)", ascending=False))
 
     return ergebnisse
 
@@ -212,14 +215,14 @@ def plot_pmi(pmi_data: dict, top_n: int = 20):
         ax.tick_params(axis="y", colors="#0C447C", labelsize=12)
         ax.grid(axis="x", color="#B5D4F4", linestyle="--", linewidth=0.6, alpha=0.7)
         ax.set_xlabel("PMI (Bits)")
-        ax.set_title(f"{'männlichen' if gender == 'männlich' else 'weiblichen'} Wissenschaftler:innen", fontsize=12, pad=10)
+        ax.set_title(f"{'männliche' if gender == 'männlich' else 'weibliche'} Wissenschaftler:innen", fontsize=12)
         ax.axvline(0, color="#185FA5", linewidth=0.9, linestyle="-")
     x_min = min(ax.get_xlim()[0] for ax in axes)
     x_max = max(ax.get_xlim()[1] for ax in axes)
     for ax in axes:
         ax.set_xlim(x_min, x_max)
 
-    plt.suptitle("Wortassoziationen nach Geschlecht (PMI)",
+    plt.title("Wortassoziationen nach Geschlecht (PMI)",
                  fontsize=20, color="#042C53", y=1.01)
     plt.tight_layout()
     plt.savefig("../figures/pmi.png", dpi=300)
