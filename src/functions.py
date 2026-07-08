@@ -75,7 +75,7 @@ def pmi(corpus):
 
     pmi = defaultdict(dict)
     for word, global_count in all_counts.items():
-        if global_count < 60:
+        if global_count < 60: #60mal sollte ein Wort vorkommen, um seltene zu filtern
             continue
         p_word = global_count / total
         for gender in ("männlich", "weiblich"):
@@ -94,14 +94,6 @@ def pmi(corpus):
     pmi_weiblich = {w: pmi["weiblich"][w] for w in top_female}
 
     pmi_dict = {"männlich": pmi_männlich, "weiblich": pmi_weiblich}
-
-    print("Top 10 männlich assoziierte Wörter (PMI):")
-    for w, s in list(pmi_männlich.items())[:10]:
-        print(f"  {w:<25} {s:+.3f}")
-
-    print("\nTop 10 weiblich assoziierte Wörter (PMI):")
-    for w, s in list(pmi_weiblich.items())[:10]:
-        print(f"  {w:<25} {s:+.3f}")
 
     return pmi_dict
 
@@ -220,15 +212,15 @@ def plot_pmi(pmi_data: dict, top_n: int = 20):
         ax.tick_params(axis="y", colors="#0C447C", labelsize=12)
         ax.grid(axis="x", color="#B5D4F4", linestyle="--", linewidth=0.6, alpha=0.7)
         ax.set_xlabel("PMI (Bits)")
-        ax.set_title(f"Top-Wörter assoziiert mit {'männlichen' if gender == 'männlich' else 'weiblichen'} Wissenschaftler:innen", fontsize=20, pad = 15)
-        ax.axvline(0, color="#185FA5", linewidth=0.9, linestyle="-",  pad=15)
+        ax.set_title(f"{'männlichen' if gender == 'männlich' else 'weiblichen'} Wissenschaftler:innen", fontsize=12, pad=10)
+        ax.axvline(0, color="#185FA5", linewidth=0.9, linestyle="-")
     x_min = min(ax.get_xlim()[0] for ax in axes)
     x_max = max(ax.get_xlim()[1] for ax in axes)
     for ax in axes:
         ax.set_xlim(x_min, x_max)
 
     plt.suptitle("Wortassoziationen nach Geschlecht (PMI)",
-                 fontsize=14, color="#042C53", y=1.01)
+                 fontsize=20, color="#042C53", y=1.01)
     plt.tight_layout()
     plt.savefig("../figures/pmi.png", dpi=300)
     plt.show()

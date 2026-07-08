@@ -30,6 +30,6 @@ pip install -r requirements.txt
 ```
 run notebooks/wikipedia_scientists.ipynb
 
-quarto render notebooks/wikipedia_scientists.ipynb --to html
+quarto render notebooks/wikipedia_scientists.ipynb --to html or --to pdf
 
 ```
