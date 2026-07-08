@@ -195,7 +195,7 @@ def plot_gender(data):
 
 # Plot zur Pointwise Mutual Information (PMI)
 def plot_pmi(pmi_data: dict, top_n: int = 20):
-    fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
     fig.patch.set_facecolor("#fcfbf9")
 
     for ax, gender in zip(axes, ("männlich", "weiblich")):
@@ -215,15 +215,19 @@ def plot_pmi(pmi_data: dict, top_n: int = 20):
         ax.tick_params(axis="y", colors="#0C447C", labelsize=12)
         ax.grid(axis="x", color="#B5D4F4", linestyle="--", linewidth=0.6, alpha=0.7)
         ax.set_xlabel("PMI (Bits)")
-        ax.set_title(f"{'männliche' if gender == 'männlich' else 'weibliche'} Wissenschaftler:innen", fontsize=12)
+
+        label = "männlichen" if gender == "männlich" else "weiblichen"
+        ax.set_title(f"Top-Wörter assoziiert mit\n{label}\nWissenschaftler:innen",
+                     fontsize=13, pad=12)
         ax.axvline(0, color="#185FA5", linewidth=0.9, linestyle="-")
+
     x_min = min(ax.get_xlim()[0] for ax in axes)
     x_max = max(ax.get_xlim()[1] for ax in axes)
     for ax in axes:
         ax.set_xlim(x_min, x_max)
 
-    plt.title("Wortassoziationen nach Geschlecht (PMI)",
-                 fontsize=20, color="#042C53", y=1.01)
+    fig.suptitle("Wortassoziationen nach Geschlecht (PMI)",
+                 fontsize=20, color="#042C53", y=1.03)
     plt.tight_layout()
     plt.savefig("../figures/pmi.png", dpi=300)
     plt.show()
@@ -245,10 +249,20 @@ def plot_rank_scatter(freq_m: dict, freq_f: dict):
     interesting = sorted(common, key=lambda w: abs(freq_m[w] - freq_f[w]),
                          reverse=True)[:12]
 
+    MANUELLE_OFFSETS = {
+    "studieren": (25, 18), 
+    }
+
     texts = []
     for w in interesting:
         x, y = np.log10(freq_m[w]), np.log10(freq_f[w])
-        texts.append(ax.text(x, y, w, fontsize=11, color="#042C53", alpha=0.9))
+        if w in MANUELLE_OFFSETS:
+            dx, dy = MANUELLE_OFFSETS[w]
+            ax.annotate(w, xy=(x, y), xytext=(dx, dy), textcoords="offset points",
+                    fontsize=11, color="#042C53", alpha=0.9,
+                    arrowprops=dict(arrowstyle="-", color="#378ADD", lw=0.7))
+        else:
+            texts.append(ax.text(x, y, w, fontsize=11, color="#042C53", alpha=0.9))
 
     adjust_text(
         texts,
